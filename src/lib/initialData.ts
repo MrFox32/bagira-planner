@@ -133,13 +133,18 @@ export const INITIAL_CLIENTS: Client[] = [
   },
 ];
 
-// Helper to get formatted date string for today and offsetting days
+// Helper to get formatted date string for today and offsetting days in local time
 export const getTodayISO = (offsetDays = 0, hour = 9, minute = 0): string => {
   const d = new Date();
   d.setDate(d.getDate() + offsetDays);
-  d.setHours(hour, minute, 0, 0);
-  return d.toISOString();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const h = String(hour).padStart(2, '0');
+  const m = String(minute).padStart(2, '0');
+  return `${year}-${month}-${day}T${h}:${m}:00`;
 };
+
 
 export const INITIAL_APPOINTMENTS: Appointment[] = [
   {

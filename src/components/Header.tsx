@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, RefreshCw, ChevronDown } from 'lucide-react';
 import { Master } from '@/types/planner';
 import { MasterSelectDropdown } from './MasterSelectDropdown';
+import { MiniCalendarPopover } from './MiniCalendarPopover';
 
 interface HeaderProps {
   selectedDate: string;
@@ -28,6 +29,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenQuickCall,
   onResetData,
 }) => {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
   const dateObj = new Date(selectedDate + 'T00:00:00');
 
   const formattedDate = dateObj.toLocaleDateString('uk-UA', {
@@ -56,10 +59,6 @@ export const Header: React.FC<HeaderProps> = ({
     onDateChange(formatDateToYYYYMMDD(newDate));
   };
 
-  const handleToday = () => {
-    onDateChange(formatDateToYYYYMMDD(new Date()));
-  };
-
   return (
     <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-30 shadow-md">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3">
@@ -86,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
-        {/* Navigation Controls (Date Bar) */}
+        {/* Navigation Controls (Date Bar with Mini Calendar Popover) */}
         <div className="flex items-center gap-2 mb-3">
           <button
             onClick={handlePrev}
@@ -96,15 +95,28 @@ export const Header: React.FC<HeaderProps> = ({
             <ChevronLeft className="w-6 h-6" />
           </button>
 
-          <button
-            onClick={handleToday}
-            className="flex-1 h-12 bg-slate-800 border border-slate-700 rounded-xl font-bold text-xs sm:text-sm hover:bg-slate-700 transition active:scale-98 flex items-center justify-center gap-2 px-3"
-          >
-            <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] uppercase font-extrabold border border-rose-500/30">
-              Сьогодні
-            </span>
-            <span>{formattedDate}</span>
-          </button>
+          <div className="relative flex-1">
+            <button
+              onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+              className="w-full h-12 bg-slate-800 border border-slate-700 hover:border-rose-500/50 rounded-xl font-bold text-xs sm:text-sm hover:bg-slate-750 transition active:scale-98 flex items-center justify-between px-3.5 shadow-sm"
+              title="Натисніть для вибору дати з календаря"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] uppercase font-extrabold border border-rose-500/30 shrink-0">
+                  Дата
+                </span>
+                <span className="truncate text-slate-100">{formattedDate}</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${isCalendarOpen ? 'rotate-180 text-rose-400' : ''}`} />
+            </button>
+
+            <MiniCalendarPopover
+              isOpen={isCalendarOpen}
+              onClose={() => setIsCalendarOpen(false)}
+              selectedDate={selectedDate}
+              onSelectDate={onDateChange}
+            />
+          </div>
 
           <button
             onClick={handleNext}

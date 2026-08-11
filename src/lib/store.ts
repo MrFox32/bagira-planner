@@ -18,15 +18,22 @@ interface PlannerStoreState {
   isSyncedWithSupabase: boolean;
 }
 
+const getLocalTodayStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export function usePlannerStore() {
   const [state, setState] = useState<PlannerStoreState>(() => {
-    const todayStr = new Date().toISOString().split('T')[0];
     return {
       masters: INITIAL_MASTERS,
       services: INITIAL_SERVICES,
       clients: INITIAL_CLIENTS,
       appointments: INITIAL_APPOINTMENTS,
-      selectedDate: todayStr,
+      selectedDate: getLocalTodayStr(),
       selectedMasterId: 'all',
       viewMode: 'day',
       isSyncedWithSupabase: false,
@@ -191,13 +198,12 @@ export function usePlannerStore() {
   };
 
   const resetToInitialData = () => {
-    const todayStr = new Date().toISOString().split('T')[0];
     const defaultState: PlannerStoreState = {
       masters: INITIAL_MASTERS,
       services: INITIAL_SERVICES,
       clients: INITIAL_CLIENTS,
       appointments: INITIAL_APPOINTMENTS,
-      selectedDate: todayStr,
+      selectedDate: getLocalTodayStr(),
       selectedMasterId: 'all',
       viewMode: 'day',
       isSyncedWithSupabase: state.isSyncedWithSupabase,

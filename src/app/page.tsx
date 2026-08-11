@@ -10,6 +10,11 @@ import { Appointment } from '@/types/planner';
 import { PhoneCall, Plus } from 'lucide-react';
 
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const {
     masters,
     services,
@@ -46,6 +51,17 @@ export default function HomePage() {
     setQuickCallDefaultTime(undefined);
     setIsQuickCallOpen(true);
   };
+
+  if (!mounted) {
+    return (
+      <main className="flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-rose-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm font-medium text-slate-400">Завантаження Bagira Planner...</span>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">

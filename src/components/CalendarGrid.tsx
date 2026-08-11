@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Master, Appointment } from '@/types/planner';
-import { CheckCircle2, Clock, User } from 'lucide-react';
+import { CheckCircle2, Clock, User, Sparkles } from 'lucide-react';
 
 interface CalendarGridProps {
   selectedDate: string;
@@ -25,7 +25,24 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   onSelectSlot,
   onSelectAppointment,
 }) => {
-  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+  const [mounted, setMounted] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    setIsTransitioning(true);
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 220);
+    return () => clearTimeout(timer);
+  }, [selectedDate, selectedMasterId, viewMode]);
+
+  const d = new Date();
+  const todayLocalStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const isToday = selectedDate === todayLocalStr;
 
   // Active masters to render in columns
   const visibleMasters = selectedMasterId === 'all'
@@ -61,7 +78,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     return `${topPercent}%`;
   };
 
-  const currentTimeTop = isToday ? getCurrentTimePosition() : null;
+  const currentTimeTop = (mounted && isToday) ? getCurrentTimePosition() : null;
 
   // For Week View: Generate 7 days starting from selectedDate (or start of week)
   const getWeekDays = () => {
@@ -144,7 +161,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 style={{ gridTemplateColumns: `repeat(${visibleMasters.length}, minmax(0, 1fr))` }}
               >
                 {/* Current Time Indicator */}
-                {currentTimeTop && (
+                {currentTimeTop && !isTransitioning && (
                   <div
                     className="absolute left-0 right-0 z-10 pointer-events-none flex items-center"
                     style={{ top: currentTimeTop }}
@@ -198,7 +215,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                               e.stopPropagation();
                               onSelectAppointment(apt);
                             }}
-                            className={`absolute left-0.5 right-0.5 sm:left-1 sm:right-1 rounded-xl p-1.5 sm:p-2.5 text-xs border shadow-lg backdrop-blur-md cursor-pointer transition transform hover:scale-[1.02] hover:z-20 overflow-hidden flex flex-col justify-between ${
+                            className={`absolute left-0.5 right-0.5 sm:left-1 sm:right-1 rounded-xl p-2 sm:p-3 text-xs sm:text-sm border shadow-xl backdrop-blur-md cursor-pointer transition transform hover:scale-[1.01] hover:z-20 overflow-hidden flex flex-col justify-between animate-in fade-in duration-200 ${
                               isCancelled
                                 ? 'bg-rose-950/40 border-rose-900/60 text-slate-400 line-through'
                                 : isCompleted
@@ -214,31 +231,31 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                           >
                             <div>
                               <div className="flex items-center justify-between gap-1 mb-1">
-                                <span className="font-mono text-[10px] sm:text-[11px] font-bold text-slate-200 flex items-center gap-1">
-                                  <Clock className="w-3 h-3 text-rose-400 inline shrink-0" />
+                                <span className="font-mono text-xs sm:text-sm font-extrabold text-slate-100 flex items-center gap-1.5">
+                                  <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-400 inline shrink-0" />
                                   {startFormatted} - {endFormatted}
                                 </span>
                                 {isCompleted && (
-                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                                 )}
                                 {isConfirmed && (
-                                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                                 )}
                               </div>
 
-                              <div className="font-bold text-[11px] sm:text-sm text-slate-100 truncate flex items-center gap-1">
-                                <User className="w-3 h-3 text-slate-400 shrink-0" />
+                              <div className="font-extrabold text-xs sm:text-base text-slate-100 truncate flex items-center gap-1.5 mt-0.5">
+                                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 shrink-0" />
                                 <span>{apt.clientName}</span>
                               </div>
 
-                              <div className="text-[10px] sm:text-[11px] text-rose-200 font-medium truncate mt-0.5">
+                              <div className="text-xs sm:text-sm text-rose-200 font-semibold leading-snug line-clamp-2 mt-1">
                                 {apt.services.map((s) => s.serviceTitle).join(', ')}
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800/60">
+                            <div className="flex items-center justify-between text-xs font-medium text-slate-400 pt-1.5 border-t border-slate-800/80 mt-1">
                               <span className="truncate">{apt.clientPhone}</span>
-                              <span className="font-bold text-emerald-400 shrink-0">{apt.totalPrice} ₴</span>
+                              <span className="font-extrabold text-emerald-400 text-xs sm:text-sm shrink-0">{apt.totalPrice} ₴</span>
                             </div>
                           </div>
                         );
@@ -262,7 +279,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
               <div className="flex-1 grid grid-cols-7 divide-x divide-slate-800">
                 {weekDays.map((day) => {
                   const isDaySelected = day.dateStr === selectedDate;
-                  const isDayToday = day.dateStr === new Date().toISOString().split('T')[0];
+                  const isDayToday = day.dateStr === todayLocalStr;
 
                   return (
                     <div
@@ -340,7 +357,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                               e.stopPropagation();
                               onSelectAppointment(apt);
                             }}
-                            className="absolute left-0.5 right-0.5 rounded-lg p-1 text-[9px] sm:text-[10px] bg-slate-900/90 border border-violet-500/40 text-white cursor-pointer hover:z-20 overflow-hidden shadow-md"
+                            className="absolute left-0.5 right-0.5 rounded-lg p-1.5 bg-slate-900/90 border border-violet-500/40 text-white cursor-pointer hover:z-20 overflow-hidden shadow-md animate-in fade-in duration-200"
                             style={{
                               top,
                               height,
@@ -348,8 +365,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                               borderLeftColor: masterColor,
                             }}
                           >
-                            <div className="font-bold text-slate-100 truncate">{apt.clientName.split(' ')[0]}</div>
-                            <div className="text-[8px] sm:text-[9px] text-rose-300 truncate hidden sm:block">
+                            <div className="font-extrabold text-xs sm:text-sm text-slate-100 truncate">{apt.clientName.split(' ')[0]}</div>
+                            <div className="text-[10px] sm:text-xs text-rose-200 font-semibold truncate hidden sm:block">
                               {apt.services.map((s) => s.serviceTitle).join(', ')}
                             </div>
                           </div>
@@ -363,6 +380,19 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
           </div>
         )}
       </div>
+
+      {/* Central Loading Spinner Overlay */}
+      {isTransitioning && (
+        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] z-40 flex items-center justify-center animate-in fade-in duration-150">
+          <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-md">
+            <div className="relative w-10 h-10 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-4 border-rose-500/20 border-t-rose-500 animate-spin" />
+              <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-rose-500 to-violet-600 animate-pulse" />
+            </div>
+            <span className="text-xs font-semibold text-slate-300">Оновлення...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

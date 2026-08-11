@@ -199,9 +199,9 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
   return (
     <>
       <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="w-full max-w-lg bg-slate-900 border-l border-slate-800 h-full flex flex-col shadow-2xl text-slate-100 animate-in slide-in-from-right duration-250">
+        <div className="w-full max-w-xl sm:max-w-2xl bg-slate-900 border-l border-slate-800 h-full flex flex-col shadow-2xl text-slate-100 animate-in slide-in-from-right duration-250">
           {/* Header */}
-          <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+          <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/90 shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-violet-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
                 <PhoneCall className="w-5 h-5 text-white" />
@@ -225,9 +225,9 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
           </div>
 
           {/* Body Content */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col min-h-0">
             {step === 'info' && (
-              <>
+              <div className="space-y-6 flex-1">
                 {/* Client Search / Details */}
                 <div className="space-y-3">
                   <label className="text-xs font-bold uppercase text-slate-400 flex items-center gap-1.5">
@@ -240,10 +240,10 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                     <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
                     <input
                       type="text"
-                      placeholder="Швидкий пошук існуючого клієнта..."
+                      placeholder="Швидкий пошук за ім'ям або телефоном..."
                       value={clientSearch}
                       onChange={(e) => setClientSearch(e.target.value)}
-                      className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none"
+                      className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none"
                     />
 
                     {filteredClients.length > 0 && (
@@ -388,46 +388,46 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                     className="w-full bg-slate-800/80 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none"
                   />
                 </div>
-              </>
+              </div>
             )}
 
             {step === 'slots' && (
-              <div className="space-y-4">
-                <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/80 space-y-2">
-                  <div className="flex items-center justify-between text-xs">
+              <div className="flex-1 flex flex-col min-h-0 space-y-4">
+                <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/80 space-y-2 shrink-0">
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
                     <span className="text-slate-400 font-medium">Клієнт:</span>
                     <span className="font-bold text-white">{clientName} ({clientPhone})</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
                     <span className="text-slate-400 font-medium">Загальний час:</span>
                     <span className="font-bold text-rose-300">
                       {totalDuration} хв послуг + {totalBuffer} хв буфер
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs border-t border-slate-700 pt-2">
+                  <div className="flex items-center justify-between text-xs sm:text-sm border-t border-slate-700/80 pt-2">
                     <span className="text-slate-400 font-medium">Сума:</span>
-                    <span className="font-extrabold text-emerald-400 text-sm">{totalPrice} ₴</span>
+                    <span className="font-extrabold text-emerald-400 text-sm sm:text-base">{totalPrice} ₴</span>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400 flex items-center gap-1.5">
+                <div className="flex-1 flex flex-col min-h-0 space-y-2.5">
+                  <label className="text-xs font-bold uppercase text-slate-400 flex items-center gap-1.5 shrink-0">
                     <Zap className="w-4 h-4 text-amber-400" />
                     Рекомендовані вільні вікна ({recommendedSlots.length})
                   </label>
 
                   {recommendedSlots.length === 0 ? (
-                    <div className="p-6 text-center bg-slate-800/40 rounded-2xl border border-slate-800 space-y-2">
-                      <AlertCircle className="w-8 h-8 text-amber-400 mx-auto opacity-80" />
-                      <p className="text-xs font-bold text-slate-200">
+                    <div className="p-8 text-center bg-slate-800/40 rounded-2xl border border-slate-800 space-y-2 my-auto">
+                      <AlertCircle className="w-10 h-10 text-amber-400 mx-auto opacity-80" />
+                      <p className="text-sm font-bold text-slate-200">
                         На жаль, на обрану дату вільного часу не знайдено
                       </p>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-xs text-slate-400">
                         Спробуйте обрати іншого майстра або змінити дату запису
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+                    <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2 scrollbar-thin">
                       {recommendedSlots.map((slot, index) => {
                         const isSelected = selectedSlot?.id === slot.id;
 
@@ -435,35 +435,39 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                           <div
                             key={index}
                             onClick={() => setSelectedSlot(slot)}
-                            className={`p-3.5 rounded-2xl border cursor-pointer transition ${
+                            className={`p-4 rounded-2xl border cursor-pointer transition transform active:scale-[0.99] ${
                               isSelected
-                                ? 'bg-rose-500/20 border-rose-500 shadow-lg shadow-rose-500/15'
-                                : 'bg-slate-800/50 border-slate-700/80 hover:bg-slate-800'
+                                ? 'bg-rose-500/20 border-rose-500 shadow-xl shadow-rose-500/15 ring-2 ring-rose-500/30'
+                                : 'bg-slate-800/60 border-slate-700/80 hover:bg-slate-800'
                             }`}
                           >
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-rose-400" />
-                                <span className="font-extrabold text-sm text-white">
+                                <Clock className="w-4.5 h-4.5 text-rose-400" />
+                                <span className="font-extrabold text-base text-white">
                                   {slot.startTime} - {slot.endTime}
                                 </span>
                               </div>
-                              {isSelected && (
-                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500 text-white">
+                              {isSelected ? (
+                                <span className="px-2.5 py-1 rounded-full bg-rose-500 text-white font-extrabold text-xs shadow-md">
                                   Обрано
+                                </span>
+                              ) : (
+                                <span className="text-xs font-semibold text-slate-400">
+                                  Обрати
                                 </span>
                               )}
                             </div>
 
                             {/* Service Allocation Breakdown */}
-                            <div className="space-y-1 border-t border-slate-700/60 pt-2">
+                            <div className="space-y-1.5 border-t border-slate-700/60 pt-2.5 mt-2">
                               {slot.masterBreakdown.map((item, i) => (
                                 <div
                                   key={i}
-                                  className="flex items-center justify-between text-[11px] text-slate-300"
+                                  className="flex items-center justify-between text-xs text-slate-300"
                                 >
-                                  <span className="font-medium truncate">{item.serviceTitle}</span>
-                                  <span className="text-slate-400 font-bold">
+                                  <span className="font-medium text-slate-200">{item.serviceTitle}</span>
+                                  <span className="text-slate-400 font-bold text-[11px]">
                                     → {item.masterName} ({item.startTime}-{item.endTime})
                                   </span>
                                 </div>
