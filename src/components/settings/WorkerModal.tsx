@@ -177,16 +177,18 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 sm:col-span-2">
               <label className="text-xs font-bold uppercase text-slate-400">Колір у графіку</label>
-              <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 p-2.5 bg-slate-950/40 rounded-2xl border border-slate-800/80">
                 {PRESET_COLORS.map((c) => (
                   <button
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
-                    className={`w-7 h-7 rounded-xl transition transform ${
-                      color === c ? 'scale-110 ring-2 ring-white shadow-lg' : 'hover:scale-105 opacity-80'
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-slate-700/60 shadow-md transition transform ${
+                      color === c
+                        ? 'scale-110 ring-2 ring-white ring-offset-2 ring-offset-slate-900 shadow-lg shadow-rose-500/20'
+                        : 'hover:scale-105 opacity-80'
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -196,48 +198,61 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
           </div>
 
           {/* Work Hours & Break */}
-          <div className="space-y-2 pt-1 border-t border-slate-800">
+          <div className="space-y-3 pt-2 border-t border-slate-800">
             <label className="text-xs font-bold uppercase text-slate-400 flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-rose-400" />
               Графік зміни та перерва
             </label>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <div>
-                <span className="text-[10px] text-slate-400 block mb-1">Початок роботи</span>
-                <input
-                  type="time"
-                  value={workStart}
-                  onChange={(e) => setWorkStart(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs font-mono text-white text-center"
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Shift Hours Group */}
+              <div className="bg-slate-950/40 p-3 rounded-2xl border border-slate-800/80 space-y-2">
+                <span className="text-xs font-bold text-slate-300 block">Робоча зміна</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 block mb-1">Початок роботи</span>
+                    <input
+                      type="time"
+                      value={workStart}
+                      onChange={(e) => setWorkStart(e.target.value)}
+                      className="w-full min-w-0 bg-slate-800 border border-slate-700 rounded-xl px-2 py-2 text-xs sm:text-sm font-mono text-white text-center [color-scheme:dark] outline-none focus:ring-2 focus:ring-rose-500"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 block mb-1">Кінець роботи</span>
+                    <input
+                      type="time"
+                      value={workEnd}
+                      onChange={(e) => setWorkEnd(e.target.value)}
+                      className="w-full min-w-0 bg-slate-800 border border-slate-700 rounded-xl px-2 py-2 text-xs sm:text-sm font-mono text-white text-center [color-scheme:dark] outline-none focus:ring-2 focus:ring-rose-500"
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] text-slate-400 block mb-1">Кінець роботи</span>
-                <input
-                  type="time"
-                  value={workEnd}
-                  onChange={(e) => setWorkEnd(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs font-mono text-white text-center"
-                />
-              </div>
-              <div>
-                <span className="text-[10px] text-slate-400 block mb-1">Перерва з</span>
-                <input
-                  type="time"
-                  value={breakStart}
-                  onChange={(e) => setBreakStart(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs font-mono text-rose-300 text-center"
-                />
-              </div>
-              <div>
-                <span className="text-[10px] text-slate-400 block mb-1">Перерва до</span>
-                <input
-                  type="time"
-                  value={breakEnd}
-                  onChange={(e) => setBreakEnd(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs font-mono text-rose-300 text-center"
-                />
+
+              {/* Break Hours Group */}
+              <div className="bg-slate-950/40 p-3 rounded-2xl border border-slate-800/80 space-y-2">
+                <span className="text-xs font-bold text-slate-300 block">Перерва</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 block mb-1">Перерва з</span>
+                    <input
+                      type="time"
+                      value={breakStart}
+                      onChange={(e) => setBreakStart(e.target.value)}
+                      className="w-full min-w-0 bg-slate-800 border border-slate-700 rounded-xl px-2 py-2 text-xs sm:text-sm font-mono text-rose-300 text-center [color-scheme:dark] outline-none focus:ring-2 focus:ring-rose-500"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 block mb-1">Перерва до</span>
+                    <input
+                      type="time"
+                      value={breakEnd}
+                      onChange={(e) => setBreakEnd(e.target.value)}
+                      className="w-full min-w-0 bg-slate-800 border border-slate-700 rounded-xl px-2 py-2 text-xs sm:text-sm font-mono text-rose-300 text-center [color-scheme:dark] outline-none focus:ring-2 focus:ring-rose-500"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
