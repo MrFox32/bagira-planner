@@ -197,6 +197,58 @@ export function usePlannerStore() {
     return newClient;
   };
 
+  const addService = (serviceData: Omit<Service, 'id'>): Service => {
+    const newService: Service = {
+      ...serviceData,
+      id: `srv-${Date.now()}`,
+    };
+    setState((prev) => ({
+      ...prev,
+      services: [...prev.services, newService],
+    }));
+    return newService;
+  };
+
+  const updateService = (id: string, updated: Partial<Service>) => {
+    setState((prev) => ({
+      ...prev,
+      services: prev.services.map((s) => (s.id === id ? { ...s, ...updated } : s)),
+    }));
+  };
+
+  const deleteService = (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      services: prev.services.filter((s) => s.id !== id),
+    }));
+  };
+
+  const addMaster = (masterData: Omit<Master, 'id'>): Master => {
+    const newMaster: Master = {
+      ...masterData,
+      id: `mst-${Date.now()}`,
+    };
+    setState((prev) => ({
+      ...prev,
+      masters: [...prev.masters, newMaster],
+    }));
+    return newMaster;
+  };
+
+  const updateMaster = (id: string, updated: Partial<Master>) => {
+    setState((prev) => ({
+      ...prev,
+      masters: prev.masters.map((m) => (m.id === id ? { ...m, ...updated } : m)),
+    }));
+  };
+
+  const deleteMaster = (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      masters: prev.masters.filter((m) => m.id !== id),
+    }));
+  };
+
   const resetToInitialData = () => {
     const defaultState: PlannerStoreState = {
       masters: INITIAL_MASTERS,
@@ -220,6 +272,12 @@ export function usePlannerStore() {
     updateAppointmentStatus,
     deleteAppointment,
     addClient,
+    addService,
+    updateService,
+    deleteService,
+    addMaster,
+    updateMaster,
+    deleteMaster,
     resetToInitialData,
   };
 }

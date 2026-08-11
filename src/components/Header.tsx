@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, RefreshCw, ChevronDown } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, RefreshCw, ChevronDown, Menu } from 'lucide-react';
 import { Master } from '@/types/planner';
 import { MasterSelectDropdown } from './MasterSelectDropdown';
 import { MiniCalendarPopover } from './MiniCalendarPopover';
@@ -16,6 +16,7 @@ interface HeaderProps {
   masters: Master[];
   onOpenQuickCall: () => void;
   onResetData: () => void;
+  onToggleSidebar?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -28,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   masters,
   onOpenQuickCall,
   onResetData,
+  onToggleSidebar,
 }) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -62,10 +64,19 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-30 shadow-md">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3">
-        {/* Top Row: Brand + Reset Action Button */}
+        {/* Top Row: Sidebar Toggle + Brand + Reset Action Button */}
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-violet-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
+            {onToggleSidebar && (
+              <button
+                onClick={onToggleSidebar}
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition"
+                title="Меню навігації"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            )}
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-violet-600 flex items-center justify-center shadow-lg shadow-rose-500/20 shrink-0">
               <CalendarIcon className="w-5 h-5 text-white" />
             </div>
             <div>
