@@ -1,8 +1,6 @@
-'use client';
-
 import React, { useState, useMemo } from 'react';
 import { Master, Service, Client, RecommendedSlot, Appointment } from '@/types/planner';
-import { findOptimalSlots } from '@/lib/slot-engine';
+import { findOptimalSlots, findAvailableDatesAcrossDays, ProposedDay } from '@/lib/slot-engine';
 import { ConfirmModal } from './ConfirmModal';
 import {
   X,
@@ -17,6 +15,7 @@ import {
   Calendar as CalendarIcon,
   Search,
   Zap,
+  CalendarDays,
 } from 'lucide-react';
 
 interface QuickCallDrawerProps {
@@ -47,7 +46,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
   onAddClient,
 }) => {
   // Form State
-  const [step, setStep] = useState<'info' | 'slots'>('info');
+  const [step, setStep] = useState<'info' | 'dates' | 'slots'>('info');
   const [clientSearch, setClientSearch] = useState('');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [clientName, setClientName] = useState('');
@@ -58,6 +57,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
   const [preferredMasterId, setPreferredMasterId] = useState<string>(defaultMasterId);
   const [targetDate, setTargetDate] = useState<string>(selectedDate);
 
+  const [proposedDays, setProposedDays] = useState<ProposedDay[]>([]);
   const [recommendedSlots, setRecommendedSlots] = useState<RecommendedSlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<RecommendedSlot | null>(null);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
@@ -107,16 +107,56 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
     0
   );
 
-  // Step 1 -> Step 2: Calculate slots
-  const handleCalculateSlots = () => {
+  const validateFormInfo = (): boolean => {
     if (!clientName.trim() || !clientPhone.trim()) {
       setAlertMessage('Будь ласка, введіть ім’я та номер телефону клієнта');
-      return;
+      return false;
     }
     if (selectedServiceIds.length === 0) {
       setAlertMessage('Будь ласка, оберіть хоча б одну послугу');
+      return false;
+    }
+    return true;
+  };
+
+  // Step 1 -> Step 2: Propose available days across next 10 days
+  const handleCalculateProposedDays = () => {
+    if (!validateFormInfo()) return;
+
+    const days = findAvailableDatesAcrossDays({
+      startDate: targetDate || selectedDate,
+      daysToScan: 10,
+      selectedServiceIds,
+      preferredMasterId,
+      masters,
+      services,
+      existingAppointments,
+    });
+
+    setProposedDays(days);
+    if (days.length === 0) {
+      setAlertMessage('На жаль, на найближчі 10 днів вільних вікон не знайдено. Спробуйте змінити майстра або послуги.');
       return;
     }
+
+    setStep('dates');
+  };
+
+  // Select a proposed day -> Step 3: Slots
+  const handleSelectProposedDay = (day: ProposedDay) => {
+    setTargetDate(day.dateStr);
+    setRecommendedSlots(day.slots);
+    if (day.slots.length > 0) {
+      setSelectedSlot(day.slots[0]);
+    } else {
+      setSelectedSlot(null);
+    }
+    setStep('slots');
+  };
+
+  // Step 1 -> Step 3: Calculate slots for target date directly
+  const handleCalculateSingleDateSlots = () => {
+    if (!validateFormInfo()) return;
 
     const calculated = findOptimalSlots({
       targetDate,
@@ -211,7 +251,11 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                   Новий запис (Дзвінок)
                 </h2>
                 <p className="text-xs text-slate-400">
-                  {step === 'info' ? 'Крок 1 з 2: Інформація та послуги' : 'Крок 2 з 2: Вибір оптимального вікна'}
+                  {step === 'info'
+                    ? 'Крок 1 з 3: Інформація та послуги'
+                    : step === 'dates'
+                    ? 'Крок 2 з 3: Пропозиція підходящих днів'
+                    : 'Крок 3 з 3: Вибір оптимального часового вікна'}
                 </p>
               </div>
             </div>
@@ -294,7 +338,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold uppercase text-slate-400 flex items-center gap-1.5">
                       <CalendarIcon className="w-4 h-4 text-rose-400" />
-                      Дата запису
+                      Бажана дата запису
                     </label>
                     <input
                       type="date"
@@ -391,18 +435,114 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
               </div>
             )}
 
-            {step === 'slots' && (
+            {/* STEP 2: PROPOSED DAYS */}
+            {step === 'dates' && (
               <div className="flex-1 flex flex-col min-h-0 space-y-4">
+                {/* Summary Box */}
                 <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/80 space-y-2 shrink-0">
                   <div className="flex items-center justify-between text-xs sm:text-sm">
                     <span className="text-slate-400 font-medium">Клієнт:</span>
                     <span className="font-bold text-white">{clientName} ({clientPhone})</span>
                   </div>
                   <div className="flex items-center justify-between text-xs sm:text-sm">
-                    <span className="text-slate-400 font-medium">Загальний час:</span>
+                    <span className="text-slate-400 font-medium">Обрано послуг:</span>
                     <span className="font-bold text-rose-300">
-                      {totalDuration} хв послуг + {totalBuffer} хв буфер
+                      {selectedServicesObjects.length} послуг ({totalDuration} хв + {totalBuffer} хв буфер)
                     </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs sm:text-sm border-t border-slate-700/80 pt-2">
+                    <span className="text-slate-400 font-medium">Загальна сума:</span>
+                    <span className="font-extrabold text-emerald-400 text-sm sm:text-base">{totalPrice} ₴</span>
+                  </div>
+                </div>
+
+                <div className="flex-1 flex flex-col min-h-0 space-y-3">
+                  <div className="flex items-center justify-between shrink-0">
+                    <label className="text-xs font-bold uppercase text-slate-400 flex items-center gap-1.5">
+                      <CalendarDays className="w-4 h-4 text-rose-400" />
+                      Пропозиція доступних днів ({proposedDays.length})
+                    </label>
+                    <span className="text-[11px] text-slate-400 font-medium">Оберіть найзручніший день ➔</span>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2 scrollbar-thin">
+                    {proposedDays.map((day) => {
+                      return (
+                        <div
+                          key={day.dateStr}
+                          onClick={() => handleSelectProposedDay(day)}
+                          className="p-4 rounded-2xl border bg-slate-800/60 border-slate-700/80 hover:border-rose-500/60 hover:bg-slate-800 transition cursor-pointer transform active:scale-[0.99] space-y-3 group shadow-lg"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500/20 to-violet-500/20 border border-rose-500/30 flex items-center justify-center text-rose-300 shrink-0 shadow-inner">
+                                <CalendarIcon className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <h3 className="font-extrabold text-sm sm:text-base text-white capitalize flex items-center gap-2">
+                                  <span>{day.formattedDate}</span>
+                                  {day.isToday && (
+                                    <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-extrabold border border-rose-500/30 uppercase">
+                                      Сьогодні
+                                    </span>
+                                  )}
+                                </h3>
+                                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                                  Вільні вікна з {day.earliestTime} до {day.latestTime}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-extrabold text-xs shrink-0">
+                              <Zap className="w-3.5 h-3.5" />
+                              <span>{day.slotsCount} вікна</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-2.5 border-t border-slate-700/60">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="flex -space-x-2 shrink-0">
+                                {day.availableMasters.map((m) => (
+                                  <img
+                                    key={m.id}
+                                    src={m.avatar}
+                                    alt={m.name}
+                                    className="w-6 h-6 rounded-full object-cover border-2 border-slate-800"
+                                    title={m.name}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-xs text-slate-300 font-medium truncate">
+                                {day.availableMasters.map((m) => m.name.split(' ')[0]).join(', ')}
+                              </span>
+                            </div>
+
+                            <span className="text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform shrink-0 flex items-center gap-1">
+                              Переглянути вікна <ChevronRight className="w-4 h-4 inline" />
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: RECOMMENDED TIME SLOTS */}
+            {step === 'slots' && (
+              <div className="flex-1 flex flex-col min-h-0 space-y-4">
+                <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/80 space-y-2 shrink-0">
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="text-slate-400 font-medium">Обрана дата:</span>
+                    <span className="font-bold text-rose-300 flex items-center gap-1.5">
+                      <CalendarIcon className="w-4 h-4 text-rose-400" />
+                      {targetDate}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="text-slate-400 font-medium">Клієнт:</span>
+                    <span className="font-bold text-white">{clientName} ({clientPhone})</span>
                   </div>
                   <div className="flex items-center justify-between text-xs sm:text-sm border-t border-slate-700/80 pt-2">
                     <span className="text-slate-400 font-medium">Сума:</span>
@@ -417,14 +557,17 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                   </label>
 
                   {recommendedSlots.length === 0 ? (
-                    <div className="p-8 text-center bg-slate-800/40 rounded-2xl border border-slate-800 space-y-2 my-auto">
+                    <div className="p-8 text-center bg-slate-800/40 rounded-2xl border border-slate-800 space-y-3 my-auto">
                       <AlertCircle className="w-10 h-10 text-amber-400 mx-auto opacity-80" />
                       <p className="text-sm font-bold text-slate-200">
                         На жаль, на обрану дату вільного часу не знайдено
                       </p>
-                      <p className="text-xs text-slate-400">
-                        Спробуйте обрати іншого майстра або змінити дату запису
-                      </p>
+                      <button
+                        onClick={() => setStep(proposedDays.length > 0 ? 'dates' : 'info')}
+                        className="text-xs font-bold text-rose-400 hover:underline pt-2 inline-block"
+                      >
+                        ← Повернутися до вибору інших днів
+                      </button>
                     </div>
                   ) : (
                     <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2 scrollbar-thin">
@@ -484,27 +627,48 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
           </div>
 
           {/* Footer Controls */}
-          <div className="p-4 sm:p-6 border-t border-slate-800 bg-slate-900/90">
+          <div className="p-4 sm:p-6 border-t border-slate-800 bg-slate-900/90 shrink-0">
             {step === 'info' ? (
-              <button
-                onClick={handleCalculateSlots}
-                className="w-full bg-gradient-to-r from-rose-500 to-violet-600 hover:from-rose-600 hover:to-violet-700 text-white py-3.5 rounded-2xl text-xs sm:text-sm font-bold shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2 active:scale-95 transition"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Розрахувати Оптимальні Вікна ➔</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  onClick={handleCalculateProposedDays}
+                  className="w-full sm:flex-1 bg-gradient-to-r from-rose-500 to-violet-600 hover:from-rose-600 hover:to-violet-700 text-white py-3.5 rounded-2xl text-xs sm:text-sm font-bold shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2 active:scale-95 transition"
+                >
+                  <CalendarDays className="w-4 h-4" />
+                  <span>Підібрати доступні дні (Пропозиція) ➔</span>
+                </button>
+                <button
+                  onClick={handleCalculateSingleDateSlots}
+                  className="w-full sm:w-auto px-4 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl text-xs font-bold border border-slate-700 transition"
+                  title="Швидкий пошук на конкретну обрану дату"
+                >
+                  На {targetDate} ➔
+                </button>
+              </div>
+            ) : step === 'dates' ? (
+              <div className="flex items-center justify-between">
                 <button
                   onClick={() => setStep('info')}
                   className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
                 >
-                  ← Назад
+                  ← Назад до інформації
+                </button>
+                <span className="text-xs text-slate-400 italic">
+                  Натисніть на картку дня вище
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setStep(proposedDays.length > 0 ? 'dates' : 'info')}
+                  className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
+                >
+                  ← {proposedDays.length > 0 ? 'До вибору днів' : 'Назад'}
                 </button>
                 <button
                   disabled={!selectedSlot}
                   onClick={handleConfirmBooking}
-                  className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 text-white py-3 rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-95 transition"
+                  className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 text-white py-3.5 rounded-2xl text-xs sm:text-sm font-bold shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-95 transition"
                 >
                   <Check className="w-4 h-4 stroke-[3]" />
                   <span>Забронювати Слоти</span>

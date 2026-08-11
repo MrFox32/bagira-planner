@@ -233,11 +233,107 @@ export function findOptimalSlots({
     }
   }
 
-  // Sort slots: Optimal first, then earlier start time
+// Sort slots: Optimal first, then earlier start time
   return slots.sort((a, b) => {
     if (a.isOptimal !== b.isOptimal) return a.isOptimal ? -1 : 1;
     return a.startTime.localeCompare(b.startTime);
   }).slice(0, 6); // Return top 6 candidates
+}
+
+export interface ProposedDay {
+  dateStr: string; // "YYYY-MM-DD"
+  formattedDate: string; // "Середа, 12 серпня"
+  dayOfWeek: string; // "Середа"
+  isToday: boolean;
+  slotsCount: number;
+  earliestTime: string;
+  latestTime: string;
+  availableMasters: { id: string; name: string; avatar: string; color: string }[];
+  slots: RecommendedSlot[];
+}
+
+interface CalculateMultiDayInput {
+  startDate: string; // "YYYY-MM-DD"
+  daysToScan?: number;
+  selectedServiceIds: string[];
+  preferredMasterId: string;
+  masters: Master[];
+  services: Service[];
+  existingAppointments: Appointment[];
+}
+
+export function findAvailableDatesAcrossDays({
+  startDate,
+  daysToScan = 10,
+  selectedServiceIds,
+  preferredMasterId,
+  masters,
+  services,
+  existingAppointments,
+}: CalculateMultiDayInput): ProposedDay[] {
+  const proposedDays: ProposedDay[] = [];
+  const baseDate = startDate ? new Date(startDate + 'T00:00:00') : new Date();
+
+  const dNow = new Date();
+  const todayStr = `${dNow.getFullYear()}-${String(dNow.getMonth() + 1).padStart(2, '0')}-${String(dNow.getDate()).padStart(2, '0')}`;
+
+  for (let i = 0; i < daysToScan; i++) {
+    const current = new Date(baseDate);
+    current.setDate(current.getDate() + i);
+
+    const year = current.getFullYear();
+    const month = String(current.getMonth() + 1).padStart(2, '0');
+    const day = String(current.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
+    const slots = findOptimalSlots({
+      targetDate: dateStr,
+      selectedServiceIds,
+      preferredMasterId,
+      masters,
+      services,
+      existingAppointments,
+    });
+
+    if (slots.length > 0) {
+      const formattedDate = current.toLocaleDateString('uk-UA', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'long',
+      });
+      const dayOfWeek = current.toLocaleDateString('uk-UA', { weekday: 'long' });
+
+      // Collect unique masters in these slots
+      const masterMap = new Map<string, { id: string; name: string; avatar: string; color: string }>();
+      slots.forEach((slot) => {
+        slot.masterBreakdown.forEach((mb) => {
+          if (!masterMap.has(mb.masterId)) {
+            const masterObj = masters.find((m) => m.id === mb.masterId);
+            masterMap.set(mb.masterId, {
+              id: mb.masterId,
+              name: mb.masterName,
+              avatar: masterObj?.avatar || '',
+              color: mb.masterColor || '#8b5cf6',
+            });
+          }
+        });
+      });
+
+      proposedDays.push({
+        dateStr,
+        formattedDate,
+        dayOfWeek,
+        isToday: dateStr === todayStr,
+        slotsCount: slots.length,
+        earliestTime: slots[0].startTime,
+        latestTime: slots[slots.length - 1].endTime,
+        availableMasters: Array.from(masterMap.values()),
+        slots,
+      });
+    }
+  }
+
+  return proposedDays;
 }
 
 function minutesToHHMM(totalMinutes: number): string {
