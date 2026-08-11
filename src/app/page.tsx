@@ -101,6 +101,7 @@ export default function HomePage() {
           onOpenQuickCall={handleOpenQuickCall}
           onResetData={resetToInitialData}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          currentView={currentView}
         />
 
         {/* View Switcher: Calendar Grid vs Settings */}
@@ -128,14 +129,16 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Floating Action Button for Quick Booking */}
-      <button
-        onClick={handleOpenQuickCall}
-        className="fixed bottom-6 right-6 flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-rose-500 to-violet-600 hover:from-rose-600 hover:to-violet-700 text-white font-extrabold text-xs sm:text-sm rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95 z-30 shadow-rose-500/30"
-      >
-        <Plus className="w-5 h-5 stroke-[3]" />
-        <span>Новий запис</span>
-      </button>
+      {/* Floating Action Button for Quick Booking (Only in Calendar View) */}
+      {currentView === 'calendar' && (
+        <button
+          onClick={handleOpenQuickCall}
+          className="fixed bottom-6 right-6 flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-rose-500 to-violet-600 hover:from-rose-600 hover:to-violet-700 text-white font-extrabold text-xs sm:text-sm rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95 z-30 shadow-rose-500/30"
+        >
+          <Plus className="w-5 h-5 stroke-[3]" />
+          <span>Новий запис</span>
+        </button>
+      )}
 
       {/* Quick Booking Drawer */}
       <QuickCallDrawer

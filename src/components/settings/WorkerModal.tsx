@@ -112,16 +112,16 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-slate-100 space-y-6 relative animate-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl text-slate-100 space-y-5 relative animate-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col overflow-x-hidden">
         {/* Header */}
         <div className="flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-violet-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-violet-600 flex items-center justify-center shadow-lg shadow-rose-500/20 shrink-0">
               <User className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-base sm:text-lg font-bold text-white">
                 {master ? 'Редагувати майстра' : 'Додати нового працівника'}
               </h2>
               <p className="text-xs text-slate-400">Профіль, графік роботи та кваліфікація</p>
@@ -137,7 +137,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-5 pr-1">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto overflow-x-hidden space-y-5 pr-1">
           {/* Main Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
@@ -179,7 +179,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase text-slate-400">Колір у графіку</label>
-              <div className="flex items-center gap-2 pt-0.5">
+              <div className="flex flex-wrap items-center gap-2 pt-0.5">
                 {PRESET_COLORS.map((c) => (
                   <button
                     key={c}

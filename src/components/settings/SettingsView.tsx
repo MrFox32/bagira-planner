@@ -30,7 +30,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [activeTab, setActiveTab] = useState<'services' | 'workers'>('services');
 
   return (
-    <div className="flex-1 bg-slate-950 text-slate-100 overflow-y-auto p-4 sm:p-8 space-y-6">
+    <div className="flex-1 bg-slate-950 text-slate-100 overflow-y-auto overflow-x-hidden w-full max-w-full p-4 sm:p-8 space-y-6">
       {/* Header Banner */}
       <div className="flex items-center gap-4 bg-gradient-to-r from-slate-900 via-slate-900 to-rose-950/30 p-6 rounded-3xl border border-slate-800 shadow-xl">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-violet-600 flex items-center justify-center shadow-lg shadow-rose-500/25 shrink-0">
