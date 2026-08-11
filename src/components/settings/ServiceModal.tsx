@@ -53,10 +53,10 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
   if (!isOpen) return null;
 
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const target = e.target;
+    const target = e.currentTarget;
     setTimeout(() => {
-      target.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }, 300);
+      target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }, 250);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -111,7 +111,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onFocus={handleInputFocus}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
             />
           </div>
 
@@ -121,7 +121,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
               value={category}
               onChange={(e) => setCategory(e.target.value as any)}
               onFocus={handleInputFocus}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
             >
               {CATEGORIES.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -141,7 +141,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
                 onFocus={handleInputFocus}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
               />
             </div>
 
@@ -154,7 +154,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
                 value={durationMinutes}
                 onChange={(e) => setDurationMinutes(Number(e.target.value))}
                 onFocus={handleInputFocus}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
               />
             </div>
 
@@ -167,7 +167,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
                 value={bufferMinutes}
                 onChange={(e) => setBufferMinutes(Number(e.target.value))}
                 onFocus={handleInputFocus}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-rose-300 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-rose-300 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
                 title="Час для дезінфекції та прибирання робочого місця"
               />
             </div>

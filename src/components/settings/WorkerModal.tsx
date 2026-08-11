@@ -89,10 +89,10 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
   };
 
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    const target = e.target;
+    const target = e.currentTarget;
     setTimeout(() => {
-      target.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }, 300);
+      target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }, 250);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -156,7 +156,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 onFocus={handleInputFocus}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
               />
             </div>
 
@@ -169,7 +169,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 onFocus={handleInputFocus}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
               />
             </div>
           </div>
@@ -183,7 +183,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 onFocus={handleInputFocus}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
               />
             </div>
 
@@ -226,7 +226,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
                       value={workStart}
                       onChange={(e) => setWorkStart(e.target.value)}
                       onFocus={handleInputFocus}
-                      className="w-full min-w-0 bg-slate-800 border border-slate-700 rounded-xl px-2 py-2 text-xs sm:text-sm font-mono text-white text-center [color-scheme:dark] outline-none focus:ring-2 focus:ring-rose-500 scroll-mt-28"
+                      className="w-full min-w-0 bg-slate-800 border border-slate-700 rounded-xl px-2 py-2 text-xs sm:text-sm font-mono text-white text-center [color-scheme:dark] outline-none focus:ring-2 focus:ring-rose-500 scroll-mt-36"
                     />
                   </div>
                   <div className="min-w-0">
@@ -236,7 +236,7 @@ export const WorkerModal: React.FC<WorkerModalProps> = ({
                       value={workEnd}
                       onChange={(e) => setWorkEnd(e.target.value)}
                       onFocus={handleInputFocus}
-                      className="w-full min-w-0 bg-slate-800 border border-slate-700 rounded-xl px-2 py-2 text-xs sm:text-sm font-mono text-white text-center [color-scheme:dark] outline-none focus:ring-2 focus:ring-rose-500 scroll-mt-28"
+                      className="w-full min-w-0 bg-slate-800 border border-slate-700 rounded-xl px-2 py-2 text-xs sm:text-sm font-mono text-white text-center [color-scheme:dark] outline-none focus:ring-2 focus:ring-rose-500 scroll-mt-36"
                     />
                   </div>
                 </div>

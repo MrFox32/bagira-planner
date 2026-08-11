@@ -235,10 +235,10 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
   };
 
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const target = e.target;
+    const target = e.currentTarget;
     setTimeout(() => {
-      target.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }, 300);
+      target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }, 250);
   };
 
   if (!isOpen) return null;
@@ -295,7 +295,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                       value={clientSearch}
                       onChange={(e) => setClientSearch(e.target.value)}
                       onFocus={handleInputFocus}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                      className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
                     />
 
                     {filteredClients.length > 0 && (
@@ -327,7 +327,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
                         onFocus={handleInputFocus}
-                        className="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                        className="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
                       />
                     </div>
                     <div>
@@ -337,7 +337,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                         value={clientPhone}
                         onChange={(e) => setClientPhone(e.target.value)}
                         onFocus={handleInputFocus}
-                        className="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                        className="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
                       />
                     </div>
                   </div>
@@ -355,7 +355,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                       value={targetDate}
                       onChange={(e) => setTargetDate(e.target.value)}
                       onFocus={handleInputFocus}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
                     />
                   </div>
 
@@ -368,7 +368,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                       value={preferredMasterId}
                       onChange={(e) => setPreferredMasterId(e.target.value)}
                       onFocus={handleInputFocus}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
                     >
                       <option value="any">Будь-який вільний майстер</option>
                       {masters.map((m) => (
@@ -442,7 +442,7 @@ export const QuickCallDrawer: React.FC<QuickCallDrawerProps> = ({
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     onFocus={handleInputFocus}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
+                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-36"
                   />
                 </div>
               </div>

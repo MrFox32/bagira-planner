@@ -27,10 +27,10 @@ body {
 
 /* Fix mobile keyboard scrolling & header overlap */
 html {
-  scroll-padding-top: 140px;
+  scroll-padding-top: 160px;
 }
 
 input, textarea, select {
-  scroll-margin-top: 140px;
+  scroll-margin-top: 160px;
 }
 
