@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Fix mobile keyboard scrolling & header overlap */
+html {
+  scroll-padding-top: 140px;
+}
+
+input, textarea, select {
+  scroll-margin-top: 140px;
+}
+

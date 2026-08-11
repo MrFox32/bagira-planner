@@ -52,6 +52,13 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
 
   if (!isOpen) return null;
 
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const target = e.target;
+    setTimeout(() => {
+      target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, 300);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -70,15 +77,15 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl text-slate-100 space-y-6 relative animate-in zoom-in-95 duration-150 overflow-x-hidden">
+      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl text-slate-100 space-y-5 relative animate-in zoom-in-95 duration-150 overflow-x-hidden max-h-[90dvh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-violet-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-violet-600 flex items-center justify-center shadow-lg shadow-rose-500/20 shrink-0">
               <Scissors className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-base sm:text-lg font-bold text-white">
                 {service ? 'Редагувати послугу' : 'Створити нову послугу'}
               </h2>
               <p className="text-xs text-slate-400">Налаштування цін, тривалості та буферу</p>
@@ -94,7 +101,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-4 pr-1">
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase text-slate-400">Назва послуги *</label>
             <input
@@ -103,7 +110,8 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
               placeholder="Наприклад: Жіноча стрижка + Укладка"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none"
+              onFocus={handleInputFocus}
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
             />
           </div>
 
@@ -112,7 +120,8 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as any)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none"
+              onFocus={handleInputFocus}
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
             >
               {CATEGORIES.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -131,7 +140,8 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
                 required
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 focus:ring-2 focus:ring-rose-500 outline-none"
+                onFocus={handleInputFocus}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
               />
             </div>
 
@@ -143,7 +153,8 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
                 required
                 value={durationMinutes}
                 onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-white focus:ring-2 focus:ring-rose-500 outline-none"
+                onFocus={handleInputFocus}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
               />
             </div>
 
@@ -155,7 +166,8 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
                 required
                 value={bufferMinutes}
                 onChange={(e) => setBufferMinutes(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-rose-300 focus:ring-2 focus:ring-rose-500 outline-none"
+                onFocus={handleInputFocus}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-rose-300 focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
                 title="Час для дезінфекції та прибирання робочого місця"
               />
             </div>
@@ -168,7 +180,8 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
               placeholder="Короткий опис або деталі процедури..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:ring-2 focus:ring-rose-500 outline-none"
+              onFocus={handleInputFocus}
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:ring-2 focus:ring-rose-500 outline-none scroll-mt-28"
             />
           </div>
 
